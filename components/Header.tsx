@@ -36,9 +36,12 @@ const Header: React.FC<HeaderProps> = ({ isAdminView, isAuthenticated, setIsAdmi
     return (
         <header className="py-4 px-4 sm:px-6 lg:px-8 w-full">
             <div className="flex justify-between items-center max-w-7xl mx-auto">
-                <h1 className="text-2xl font-bold text-gray-900 tracking-tight">
-                    <span className="text-gray-500">Reserve</span>Ease
-                </h1>
+                <div>
+                    <h1 className="text-2xl font-bold text-gray-900 tracking-tight">
+                        <span className="text-gray-500">Reserve</span>Ease
+                    </h1>
+                    <p className="text-sm text-gray-600 mt-1">🍽️ Your table awaits</p>
+                </div>
                 <button
                     onClick={handleButtonClick}
                     className="bg-gray-800 text-white px-4 py-2 rounded-md text-sm font-medium hover:bg-gray-700 transition-colors"
