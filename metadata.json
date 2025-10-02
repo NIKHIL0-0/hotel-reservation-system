@@ -1,0 +1,5 @@
+{
+  "name": "ReserveEase",
+  "description": "A clean and simple web application for restaurant table reservations and admin management. Users can book a table, and administrators can manage requests, ongoing reservations, and view booking history.",
+  "requestFramePermissions": []
+}
