@@ -4,6 +4,14 @@ import { Booking } from '../types'
 const supabaseUrl = import.meta.env.VITE_SUPABASE_URL
 const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY
 
+// Debug environment variables
+console.log('Supabase URL:', supabaseUrl ? 'Set' : 'Missing');
+console.log('Supabase Key:', supabaseAnonKey ? 'Set' : 'Missing');
+
+if (!supabaseUrl || !supabaseAnonKey) {
+  console.error('Missing Supabase environment variables');
+}
+
 export const supabase = createClient(supabaseUrl, supabaseAnonKey)
 
 // Database types for Supabase
@@ -97,37 +105,47 @@ export const bookingService = {
     }))
   },
 
-  // Create a new booking
+  // Create a new booking (with proper error handling)
   async createBooking(booking: Omit<Booking, 'id'>): Promise<Booking> {
-    const { data, error } = await supabase
-      .from('bookings')
-      .insert({
-        name: booking.name,
-        phone: booking.phone,
-        email: booking.email || null,
-        guests: booking.guests,
-        date: booking.date,
-        time: booking.time,
-        note: booking.note || null,
-        status: booking.status,
-        confirmation_method: booking.confirmationMethod || null
-      })
-      .select()
-      .single()
-    
-    if (error) throw error
-    
-    return {
-      id: data.id,
-      name: data.name,
-      phone: data.phone,
-      email: data.email || undefined,
-      guests: data.guests,
-      date: data.date,
-      time: data.time,
-      note: data.note || undefined,
-      status: data.status as any,
-      confirmationMethod: data.confirmation_method as any
+    try {
+      // First, try to insert the booking
+      const { data, error } = await supabase
+        .from('bookings')
+        .insert({
+          name: booking.name,
+          phone: booking.phone,
+          email: booking.email || null,
+          guests: booking.guests,
+          date: booking.date,
+          time: booking.time,
+          note: booking.note || null,
+          status: booking.status,
+          confirmation_method: booking.confirmationMethod || null
+        })
+        .select()
+        .single()
+      
+      if (error) {
+        console.error('Supabase insert error:', error)
+        // If RLS is blocking, we might need to handle this differently
+        throw new Error(`Failed to create booking: ${error.message}`)
+      }
+      
+      return {
+        id: data.id,
+        name: data.name,
+        phone: data.phone,
+        email: data.email || undefined,
+        guests: data.guests,
+        date: data.date,
+        time: data.time,
+        note: data.note || undefined,
+        status: data.status as any,
+        confirmationMethod: data.confirmation_method as any
+      }
+    } catch (error) {
+      console.error('Booking creation failed:', error)
+      throw error
     }
   },
 

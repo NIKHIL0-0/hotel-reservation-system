@@ -55,13 +55,17 @@ const App: React.FC = () => {
 
   const handleBookingSubmit = async (newBookingData: Omit<Booking, 'id' | 'status'>, confirmationMethod: ConfirmationMethod) => {
     try {
+      console.log('Creating booking with data:', newBookingData);
+      
       const newBooking: Omit<Booking, 'id'> = {
         ...newBookingData,
         status: BookingStatus.PENDING,
         confirmationMethod: confirmationMethod,
       };
       
+      console.log('Submitting to Supabase:', newBooking);
       const createdBooking = await bookingService.createBooking(newBooking);
+      console.log('Booking created successfully:', createdBooking);
       
       // Send confirmation SMS/WhatsApp to customer about pending reservation
       if (confirmationMethod === 'SMS' || confirmationMethod === 'WhatsApp') {
@@ -92,9 +96,13 @@ We'll confirm your reservation shortly!`;
       
       // Refresh bookings list
       await loadBookings();
-    } catch (error) {
+      
+      // Show success message
+      alert('Booking submitted successfully! We will confirm your reservation shortly.');
+      
+    } catch (error: any) {
       console.error('Error creating booking:', error);
-      alert('Failed to create booking. Please try again.');
+      alert(`Failed to create booking: ${error.message || 'Please try again.'}`);
     }
   };
 
